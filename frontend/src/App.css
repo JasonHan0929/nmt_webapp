@@ -100,7 +100,7 @@ body {
 
 .textareaAfter {
   height:auto;
-  max-width:600px;
+  max-width:850px;
   color:#fff;
   font-weight:300;
   font-size:16px;
@@ -120,7 +120,7 @@ body {
   transition: height 2s ease;
   text-align: left;
   position: absolute;
-  margin-left: 260px;
+  margin-left: 150px;
   margin-top: 20px;
 
 }
@@ -269,7 +269,7 @@ top: 80px;
 box-shadow: 0 1px 0 rgba(255, 255, 255, 0.5) inset;
 -moz-box-shadow: 0 1px 0 rgba(255, 255, 255, 0.5) inset;
 -webkit-box-shadow: 0 1px 0 rgba(255, 255, 255, 0.5) inset;
-margin-left: 190px;
+margin-left: 290px;
 }
 
 .counter {
