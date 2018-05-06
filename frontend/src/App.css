@@ -78,10 +78,10 @@ body {
 
 .textarea {
   height:180px;
-  max-width:600px;
+  max-width:800px;
   color:#fff;
   font-weight:380;
-  font-size:21px;
+  font-size:22px;
   font-family:'Ubuntu', Helvetica, Arial, sans-serif;
   width:100%;
   background:#2c3e50;
@@ -103,7 +103,7 @@ body {
   max-width:850px;
   color:#fff;
   font-weight:300;
-  font-size:16px;
+  font-size:18px;
   font-family:'Ubuntu', Helvetica, Arial, sans-serif;
   width:100%;
   background:#2c3e50;
@@ -276,7 +276,7 @@ margin-left: 290px;
   margin: 0;
   position: relative;
   top: -12px;
-  right: 250px;
+  right: 170px;
   text-align: right;
   font-weight: bold;
 }
@@ -291,13 +291,18 @@ margin-left: 290px;
   font-family: 'Open Sans', sans-serif;
 }
 
+.red {
+  color:  #FF0000;
+  font-weight: bold;
+}
+
 .loadEffect{
             width: 100px;
             height: 100px;
             position: relative;
             margin: 0 auto;
             margin-top:100px;
-        }
+        }x
         .loadEffect span{
             display: inline-block;
             width: 20px;

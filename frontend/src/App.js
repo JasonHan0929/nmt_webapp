@@ -27,19 +27,25 @@ class BottomBasic extends Component {
 }
 
 class GoogleTranslated extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {translated: null}
-  }
-  translate(props) {
-    const url = 'https://translate.googleapis.com/translate_a/single?client=gtx&sl=en&tl=zh&dt=t&q=' + encodeURIComponent(props.source_text);
-    fetch(url).then(data => data.json()).then(data => this.setState({translated: data[0][0][0]}));
-  }
-
   render() {
-    this.translate(this.props);
     return (
-      <p>{this.state.translated}</p>
+      <div>
+        <h2>Google Translated:</h2>
+        <p dangerouslySetInnerHTML={{__html:
+        this.props.translated}}></p>
+      </div>
+    );
+  }
+}
+
+class NMTTranslated extends Component {
+  render() {
+    return (
+      <div>
+        <h2>NMT Translated:</h2>
+        <p dangerouslySetInnerHTML={{__html:
+        this.props.nmt_text}}></p>
+      </div>
     );
   }
 }
@@ -48,7 +54,7 @@ class Loading extends Component {
   render() {
     return (
       <div>
-        <div class="loadEffect">
+        <div className="loadEffect">
           <span></span>
           <span></span>
           <span></span>
@@ -78,11 +84,14 @@ class SourceText extends Component {
       loading_state: "before",
       data: {},
       again: true,
+      translated: undefined,
+      google_text: undefined,
+      nmt: undefined
     };
 
     this.handleChange = this.handleChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
-    this.toggleAgain = this.toggleAgain.bind(this);
+    this.toggleAgain = this.toggleAgain.bind(this)
   }
 
   handleChange(event) {
@@ -108,36 +117,72 @@ class SourceText extends Component {
     }
   }
 
+  handleSubmit(event) {
+    if (this.state.maximum_class === "maximum-warning") {
+      alert("You could not sned a source text more than 80 words in current version!");
+    } else {
+      this.setState({loading_state: "during"});
+      Promise.all([this.getNMT(), this.translate()]).then(
+        res => this.redCommonText()
+      ).then(
+        res => {
+          this.toggleAgain();
+          this.setState({loading_state: "after"})
+        }
+      );
+    }
+  }
+
+  getNMT() {
+    return fetch(BACKEND + '/nmt/', {
+      method: 'POST',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        attention: this.state.select_value,
+        source_text: this.state.textarea_value.trim(),
+      })
+    }).then(
+      data => data.json()
+    ).then(data => {
+      this.setState({
+        data: data
+      });
+    })
+  }
+
+  translate() {
+    const url = 'https://translate.googleapis.com/translate_a/single?client=gtx&sl=en&tl=zh&dt=t&q='
+                  + encodeURIComponent(this.state.textarea_value.trim());
+    return fetch(url).then(data => data.json()).then(data => this.setState({google_text: data[0][0][0]}));
+  }
+
   toggleAgain() {
     this.setState({again: !this.state.again})
   }
 
-  handleSubmit(event) {
-    if (this.state.maximum_class === "maximum-warning") {
-      alert("You could not sned a source text more than 50 words in current version!");
-    } else {
-      this.setState({loading_state: "during"});
-      fetch(BACKEND + '/nmt/', {
-        method: 'POST',
-        headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          attention: this.state.select_value,
-          source_text: this.state.textarea_value.trim(),
-        })
-      }).then(
-        data => data.json()
-      ).then(data => {
-        this.setState({
-          loading_state: "after",
-          data: data
-        });
-      });
-      this.toggleAgain()
+  redCommonText() {
+    const nmt_array = this.state.data.nmt_text.replace(/[^0-9a-zA-Z\u4e00-\u9fa5]/g,"").split("")
+    const google_array = this.state.google_text.replace(/[^0-9a-zA-Z\u4e00-\u9fa5]/g,"").split("")
+    const nmt = this.state.data.nmt_text.split("")
+    const google = this.state.google_text.split("")
+    const common_set = new Set(google_array.slice().filter(word => nmt_array.indexOf(word) != -1))
+    for (let i = 0; i < nmt.length; i++) {
+      if (common_set.has(nmt_array[i])) {
+        nmt[i] = "<span class='red'>"+nmt_array[i]+"</span>"
+      }
     }
-    event.preventDefault();
+    for (let i = 0; i < google.length; i++) {
+      if (common_set.has(google_array[i])) {
+        google[i] = "<span class='red'>"+google_array[i]+"</span>"
+      }
+    }
+    this.setState({
+      nmt: nmt.join(""),
+      translated: google.join("")
+    })
   }
 
   render() {
@@ -148,11 +193,13 @@ class SourceText extends Component {
         <form onSubmit={this.handleSubmit}>
           <h1 className="h1">Source Text in English:<br /></h1>
           <div>
-            <h3 className="h3">Attention:</h3>
+            <h3 className="h3">Model:</h3>
             <div className="select">
               <select value={this.state.select_value} onChange={this.handleChange} id="slct">
-                 <option value="bahdanau">Bahdanau</option>
-                <option value="other">Other</option>
+                <option value="naive">Naive</option>
+                <option value="luong">Luong</option>
+                <option value="luong_deeper">Luong Deeper</option>
+                <option value="bahdanau">Bahdanau</option>
               </select>
             </div>
           </div>
@@ -170,10 +217,8 @@ class SourceText extends Component {
         <div className='textareaAfter' >
           <h2>Source Text:</h2>
           <p>{this.state.data.source_text}</p>
-          <h2>NMT Translated:</h2>
-          <p>{this.state.data.nmt_text}</p>
-          <h2>Google Translated:</h2>
-          <GoogleTranslated source_text={this.state.data.source_text} />
+          <NMTTranslated nmt_text={this.state.nmt} />
+          <GoogleTranslated translated={this.state.translated} />
           <input type="submit" value="Continue Translation" onClick={this.toggleAgain} className='fsSubmitButtonContinue' />
         </div>
       );
@@ -191,7 +236,7 @@ class App extends Component {
             <TopBasic />
           </div>
           <div className="wrapper">
-            <SourceText max_words="50" />
+            <SourceText max_words="80" />
           </div>
           <BottomBasic/>
         </div>
