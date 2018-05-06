@@ -1,2 +1,4 @@
 /env
-/backend/Epica/
+/backend/Epica/nmt_attention_model_scaled_luong_50w
+/backend/Epica/nmt_attention_model_scaled_luong_50w_deeper
+/backend/Epica/nmt_model_naive_50w
