@@ -45,6 +45,7 @@ class NMTTranslated extends Component {
         <h2>NMT Translated:</h2>
         <p dangerouslySetInnerHTML={{__html:
         this.props.nmt_text}}></p>
+        <p><b>Google to English: </b>{this.props.translate_again}</p>
       </div>
     );
   }
@@ -86,7 +87,8 @@ class SourceText extends Component {
       again: true,
       translated: undefined,
       google_text: undefined,
-      nmt: undefined
+      nmt: undefined,
+      translate_again: undefined
     };
 
     this.handleChange = this.handleChange.bind(this);
@@ -123,6 +125,8 @@ class SourceText extends Component {
     } else {
       this.setState({loading_state: "during"});
       Promise.all([this.getNMT(), this.translate()]).then(
+        res => this.translate_again()
+      ).then(
         res => this.redCommonText()
       ).then(
         res => {
@@ -159,6 +163,12 @@ class SourceText extends Component {
     return fetch(url).then(data => data.json()).then(data => this.setState({google_text: data[0][0][0]}));
   }
 
+  translate_again() {
+    const url = 'https://translate.googleapis.com/translate_a/single?client=gtx&sl=zh&tl=en&dt=t&q='
+                  + encodeURIComponent(this.state.data.nmt_text.trim());
+    return fetch(url).then(data => data.json()).then(data => this.setState({translate_again: data[0][0][0]}));
+  }
+
   toggleAgain() {
     this.setState({again: !this.state.again})
   }
@@ -170,13 +180,13 @@ class SourceText extends Component {
     const google = this.state.google_text.split("")
     const common_set = new Set(google_array.slice().filter(word => nmt_array.indexOf(word) != -1))
     for (let i = 0; i < nmt.length; i++) {
-      if (common_set.has(nmt_array[i])) {
-        nmt[i] = "<span class='red'>"+nmt_array[i]+"</span>"
+      if (common_set.has(nmt[i])) {
+        nmt[i] = "<span class='red'>"+nmt[i]+"</span>"
       }
     }
     for (let i = 0; i < google.length; i++) {
-      if (common_set.has(google_array[i])) {
-        google[i] = "<span class='red'>"+google_array[i]+"</span>"
+      if (common_set.has(google[i])) {
+        google[i] = "<span class='red'>"+google[i]+"</span>"
       }
     }
     this.setState({
@@ -190,6 +200,7 @@ class SourceText extends Component {
       return (<Loading />);
     } else if (this.state.loading_state === "before" || this.state.again) {
       return (
+        <div>
         <form onSubmit={this.handleSubmit}>
           <h1 className="h1">Source Text in English:<br /></h1>
           <div>
@@ -211,13 +222,15 @@ class SourceText extends Component {
             <input type="submit" value="Submit" className='fsSubmitButton' />
           </div>
         </form>
+        <BottomBasic/>
+        </div>
       );
     } else if (this.state.loading_state === "after") {
       return (
         <div className='textareaAfter' >
           <h2>Source Text:</h2>
           <p>{this.state.data.source_text}</p>
-          <NMTTranslated nmt_text={this.state.nmt} />
+          <NMTTranslated nmt_text={this.state.nmt} translate_again={this.state.translate_again} />
           <GoogleTranslated translated={this.state.translated} />
           <input type="submit" value="Continue Translation" onClick={this.toggleAgain} className='fsSubmitButtonContinue' />
         </div>
@@ -238,7 +251,6 @@ class App extends Component {
           <div className="wrapper">
             <SourceText max_words="80" />
           </div>
-          <BottomBasic/>
         </div>
     )
   }

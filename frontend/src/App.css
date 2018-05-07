@@ -45,12 +45,13 @@ body {
   position:absolute;
   margin-left: auto;
   margin-right: auto;
+  margin-bottom: auto;
   left:0;
   right:0;
   bottom:50px;
   height:60px;
   color: #FFFAFA;
-  font-weight:400;;
+  font-weight:400;
 }
 
 .textarea {
@@ -103,7 +104,7 @@ body {
   max-width:850px;
   color:#fff;
   font-weight:300;
-  font-size:18px;
+  font-size:20px;
   font-family:'Ubuntu', Helvetica, Arial, sans-serif;
   width:100%;
   background:#2c3e50;
@@ -265,7 +266,7 @@ select::-ms-expand {
   border: 1px solid #222;
   cursor: pointer;
   position: relative;
-  top: 80px;
+  top: 70px;
   box-shadow: 0 1px 0 rgba(255, 255, 255, 0.5) inset;
   -moz-box-shadow: 0 1px 0 rgba(255, 255, 255, 0.5) inset;
   -webkit-box-shadow: 0 1px 0 rgba(255, 255, 255, 0.5) inset;
@@ -283,7 +284,7 @@ select::-ms-expand {
 
 .loading {
   position: fixed;
-  top: 48%;
+  top: 55%;
   left: 45.5%;
   font-weight: bold;
   color:#222;
