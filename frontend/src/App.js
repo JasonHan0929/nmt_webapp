@@ -204,13 +204,13 @@ class SourceText extends Component {
         <form onSubmit={this.handleSubmit}>
           <h1 className="h1">Source Text in English:<br /></h1>
           <div>
-            <h3 className="h3">Model:</h3>
+            <h3 className="h3">Attention:</h3>
             <div className="select">
               <select value={this.state.select_value} onChange={this.handleChange} id="slct">
-                <option value="naive">Naive</option>
-                <option value="luong">Luong</option>
-                <option value="luong_deeper">Luong Deeper</option>
-                <option value="bahdanau">Bahdanau</option>
+                <option value="naive">None</option>
+                <option value="luong">Luong,Pham,Manning</option>
+                <option value="luong_deeper">(Deeper)Luong,Pham,Manning</option>
+                <option value="bahdanau">Bahdanau,Cho,Bengio</option>
               </select>
             </div>
           </div>

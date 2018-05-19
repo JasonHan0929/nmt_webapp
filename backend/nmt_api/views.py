@@ -17,7 +17,7 @@ def nmt(request):
   else:
     raise ValidationError('Wrong Http Verb!')
   if 'source_text' in request_dict and 'attention' in request_dict:
-    translation = Translation(source_text=request_dict['source_text'], target_text=None)
+    translation = Translation(source_text=request_dict['source_text'].lower(), target_text=None)
     if 'target_text' in request_dict:
       translation.target_text = request_dict['target_text']
     translation.nmt_text = getattr(predict, request_dict['attention'])(translation.source_text)
